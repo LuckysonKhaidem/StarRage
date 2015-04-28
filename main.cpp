@@ -8,263 +8,33 @@
 #include<stdlib.h>
 #include<iostream>
 #include<math.h> 
+#include"classes/gameObjects.h"
 
 #define n 500
+  #define instructionScreen 3
+ #define startScreen 2
 #define game 0
 #define over 1
-int enemyX[481];
-GLfloat colors[][3]={{1,0,0},{1,1,1},{0,1,0},{0,0,1}};
-
-using namespace std;
+ using namespace std;
+extern int enemyX[481];
 int height=500, width=500;
-class star
-{
-	public:
-	
-		double x;
-		double y;
-		void move()
-		{
-			y--;
-		}
-		void show()
-		{
-			glPointSize(1);
-			glColor3f(1,1,1);
-			glBegin(GL_POINTS);
-			glVertex2f(x,y);
-			glEnd();
-		}
-		
-	
-};
-
-class myship
-{
-	public:
-		double x;
-		double y;
-		int shoot;
-		int explode;
-		int alive;
-		float r; // Blast radius
-		myship()
-		{
-			x=250;
-			y=40;
-			shoot=0;
-			r=0;
-			explode=0;
-			alive=1;
-		}
-		void move_left(int offset)
-		{
-			x=x-offset;
-		}
-		void move_right(int offset)
-		{
-			x=x+offset;
-		}
-		void explosion()
-		{
-			float i,j,J;
-			float asp;
-			for(i=x-r;i<=x+r;i++)
-			{
-				asp=r*r-(i-x)*(i-x);
-				j=sqrt(asp)+y;
-				J=-sqrt(asp)+y;
-				glBegin(GL_POINTS);
-					glVertex2f(i,j);
-					glVertex2f(i,J);
-				glEnd();
-			}
-			r++;
-			
-		}
-};
-
-class bullet
-{
-	public:
-		double x;
-		double y;
-		int firing;
-		bullet()
-		{
-			firing=0;
-		}
-		void getPosition(myship ship)
-		{
-			x=ship.x;
-			y=ship.y+35;
-		}
-		void fire()
-		{
-
-			firing=1;
-		}
-		void draw()
-		{
-			glColor3f(1,0,0);
-			glLineWidth(3);
-			glBegin(GL_LINES);
-				glVertex2f(x,y);
-				glVertex2f(x,y+10);
-			glEnd();
-		}
-		void move(int offset)
-		{
-			y=y+offset;
-		}
-		void reinit()
-		{
-			firing=0;
-		}
-};
-
-class enemy
-{
-	public:
-	double x;
-	double y;
-
-	int alive;
-	int explode;
-	float r; // Blast Radius;
-	enemy()
-	{
-		alive=1;
-		explode=0;
-		r=0;
-	}
-	
-	void init()
-	{
-		x=enemyX[rand()%481];
-		y=500;
-		alive=1;
-		explode=0;
-		r=0;
-	}
-
-	void draw()
-	{
-		glColor3f(0.9,0.91,0.98);
-		glBegin(GL_POLYGON);
-			glVertex2f(x-2,y-20);
-			glVertex2f(x-10,y-5);
-			glVertex2f(x-2,y+20);
-			glVertex2f(x+2,y+20);
-			glVertex2f(x+10,y-5);
-			glVertex2f(x+2,y-20);
-			glVertex2f(x-2,y-20);
-		glEnd();
-		glBegin(GL_POLYGON);
-			glVertex2f(x-10,y-5);
-			glVertex2f(x-15,y-5);
-			glVertex2f(x-15,y+15);
-			glVertex2f(x-5,y+10.625);
-		glEnd();
-		glBegin(GL_POLYGON);
-			glVertex2f(x+10,y-5);
-			glVertex2f(x+15,y-5);
-			glVertex2f(x+15,y+15);
-			glVertex2f(x+5,y+10.625);
-		glEnd();
-		glColor3f(0,0,0);
-		glBegin(GL_LINE_STRIP);
-			glVertex2f(x-2,y-20);
-			glVertex2f(x-10,y-5);
-			glVertex2f(x-2,y+20);
-			glVertex2f(x+2,y+20);
-			glVertex2f(x+10,y-5);
-			glVertex2f(x+2,y-20);
-			glVertex2f(x-2,y-20);
-		glEnd();
-		glBegin(GL_LINE_STRIP);
-			glVertex2f(x-10,y-5);
-			glVertex2f(x-15,y-5);
-			glVertex2f(x-15,y+15);
-			glVertex2f(x-5,y+10.625);
-		glEnd();
-		glBegin(GL_LINE_STRIP);
-			glVertex2f(x+10,y-5);
-			glVertex2f(x+15,y-5);
-			glVertex2f(x+15,y+15);
-			glVertex2f(x+5,y+10.625);
-		glEnd();
-			
-	}
-	void move(float offset)
-	{
-		y=y-offset;
-	}
-	void explosion()
-	{
-		float i,j,J;
-		float asp;
-		glColor3f(1,1,1);
-		for(i=x-r;i<=x+r;i++)
-		{
-			asp=r*r-(i-x)*(i-x);
-			j=sqrt(asp)+y;
-			J=-sqrt(asp)+y;
-			glBegin(GL_POINTS);
-				glVertex2f(i,j);
-				glVertex2f(i,J);
-			glEnd();
-		}
-		r++;
-		y--;
-	}
-};
-class special
-{
-	public:
-	float y;
-	int firing;
-	int shoot;
-	
-	int curcolor;
-	special()
-	{
-			curcolor=0;
-	}
-	void getPosition(myship ship)
-	{
-		y=ship.y+30;
-	}
-	void move()
-	{
-		glColor3fv(colors[curcolor]);
-		glBegin(GL_LINES);
-			glVertex2f(0,y);
-			glVertex2f(500,y);
-			glEnd();
-		curcolor=(curcolor+1)%4;
-		y=y+2;
-	}
-};
-
-
 namespace GameObjects
 {
 	myship ship;
 	star s[n];
 	bullet b[30];
-	int nobull;
+	int NumberOfBulletsPerFrame;
 	enemy e[50];
 	special sp;
 	char score[]="Score:";
 	char health[]="Health:";
 	int sco;
-	int noe=4;
+	int NumberOfEnemiesPerFrame=4;
 	int level;
 	float enemyspeed=2;
 	int bulletspeed=26;
 	int hea=100;
-	int gamestate=game;
+	int gamestate=startScreen;
 	int spec=5;	
 }
 
@@ -291,7 +61,15 @@ void showstars()
 	}
 	
 }
-
+void FireBulletsIfShot()
+{
+if(ship.shoot)
+	{
+		b[NumberOfBulletsPerFrame-1].fire();
+		b[NumberOfBulletsPerFrame-1].getPosition(ship);
+		ship.shoot=0;
+	}
+}
 void drawship()
 {
 	
@@ -302,43 +80,7 @@ void drawship()
 	if(ship.alive)
 	{
 		 
-		
-		glColor3f(1,1,1);
-			glBegin(GL_LINE_STRIP);
-                        glVertex2f(x-5,y-15);
-                        glVertex2f(x-15,y-10);
-                        glVertex2f(x-20,y-12.5);
-                        glVertex2f(x-30,y-5);
-                        glVertex2f(x-5,y+15);
-                        glVertex2f(x-5,y-15);
-                        glEnd();
-                glBegin(GL_LINE_STRIP);
-                        glVertex2f(x+5,y-15);
-                        glVertex2f(x+15,y-10);
-                        glVertex2f(x+20,y-12.5);
-                        glVertex2f(x+30,y-5);
-                        glVertex2f(x+5,y+15);
-                        glVertex2f(x+5,y-15);
-                        glEnd();
-                glBegin(GL_LINE_STRIP);
-                        glVertex2f(x-5,y-10);
-                        glVertex2f(x,y-12.5);
-                        glVertex2f(x+5,y-10);
-                        glEnd();
-                glBegin(GL_LINE_STRIP);
-                        glVertex2f(x-5,y+15);
-                        glVertex2f(x-7.5,y+20);
-                        glVertex2f(x,y+30);
-                        glVertex2f(x+7.5,y+20);
-                        glVertex2f(x+5,y+15);
-                        glEnd();
-                glBegin(GL_LINE_STRIP);
-                        glVertex2f(x+5,y+15);
-                        glVertex2f(x+5,y-10);
-                        glVertex2f(x,y-12.5);
-                        glVertex2f(x-5,y-10);
-                        glVertex2f(x-5,y+15);
-                        glEnd();
+		ship.displayShip();
 
 
 	}
@@ -348,14 +90,10 @@ void drawship()
 		if(ship.r == 30)
 		{
 			gamestate=over;
+			glutPostRedisplay();
 		}
 	}
-	if(ship.shoot)
-	{
-		b[nobull-1].fire();
-		b[nobull-1].getPosition(ship);
-		ship.shoot=0;
-	}
+	FireBulletsIfShot();
 
 	
 }
@@ -363,7 +101,7 @@ void drawbullet()
 {
 	int i;
 
-	for(i=0;i<nobull;i++)
+	for(i=0;i<NumberOfBulletsPerFrame;i++)
 	{
 		if(b[i].firing)
 		{
@@ -376,16 +114,16 @@ void drawbullet()
 			
 		}
 	}
-	if(nobull>30)
+	if(NumberOfBulletsPerFrame>30)
 	{
-		nobull=0;
+		NumberOfBulletsPerFrame=0;
 	}
 }
 void drawenemy()
 {
 	
 	int i;
-	for(i=0;i<noe;i++)
+	for(i=0;i<NumberOfEnemiesPerFrame;i++)
 	{
 		if(e[i].alive)
 		{
@@ -410,14 +148,14 @@ void drawenemy()
 	
 	
 }
-void CollisionDetect()
+void BulletsVsEnemyCollisionTest()
 {
 	
 	int i;
 	int j;
-	for(i=0;i<nobull;i++)
+	for(i=0;i<NumberOfBulletsPerFrame;i++)
 	{
-		for(j=0;j<noe;j++)
+		for(j=0;j<NumberOfEnemiesPerFrame;j++)
 		if((e[j].x-10)<=b[i].x && b[i].x <= (e[j].x+10) && e[j].alive)
 		{
 			if((b[i].y+20)>= (e[j].y-20) && (b[i].y+20) <= (e[j].y+20))
@@ -433,11 +171,11 @@ void CollisionDetect()
 		}
 	}
 }
-void ShipCollision()
+void MyShipVsEnemyCollisionTest()
 {
 	
 	int i;
-	for(i=0;i<noe;i++)
+	for(i=0;i<NumberOfEnemiesPerFrame;i++)
 	{
 		if(e[i].alive)
 		{
@@ -466,11 +204,11 @@ void ShipCollision()
 	
 }
 
-void specialcollision()
+void SpecialWeaponVsEnemyCollisionTest()
 {
 	int i;
 	if(sp.firing)
-	for(i=0;i<noe;i++)
+	for(i=0;i<NumberOfEnemiesPerFrame;i++)
 	{
 		if(sp.y >= e[i].y-20 && sp.y <= e[i].y+20 && e[i].alive)
 		{
@@ -510,10 +248,14 @@ void displayText()
  	{
  		ch[i]='0';
  	}
+
 	 glRasterPos2f(0,470);
+
         for(i=0;i<sizeof(health);i++)
                 glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,health[i]);
+
         temp=hea;
+
         i=2;
         do
         {
@@ -525,12 +267,14 @@ void displayText()
         }while(temp);
         for(i=0;i<sizeof(ch);i++)
                 glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,ch[i]);
+
         glRasterPos2f(0,450);
         for(i=0;i<sizeof(spe);i++)
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,spe[i]);
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,c='0'+spec);
 
-}	
+}
+
 void drawspecial()
 {
 	if(sp.shoot)
@@ -549,25 +293,27 @@ void drawspecial()
 		}
 	}
 }
+
+
 void gamedisplay()
 {
 	if(level >= 10)
 	{
 		enemyspeed +=0.5;
 		level=0;
-		if(noe <= 7) noe++;
+		if(NumberOfEnemiesPerFrame <= 7) NumberOfEnemiesPerFrame++;
 	}
 	
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	// glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	showstars();
 	
 	drawship();
 	drawenemy();
 	drawbullet();
 	drawspecial();
-	CollisionDetect();
-	ShipCollision();
-	specialcollision();
+	BulletsVsEnemyCollisionTest();
+	MyShipVsEnemyCollisionTest();
+	SpecialWeaponVsEnemyCollisionTest();
 	displayText();
 	glFlush();
 	system("sleep 0.00001");
@@ -595,18 +341,46 @@ void reshape(int w, int h)
 	glLoadIdentity();
 	glutPostRedisplay();
 }
+void Reinitialization()
+{
+	gamestate=game;
+	ship.Constructor();
+	NumberOfEnemiesPerFrame=4;
+	enemyspeed=2;
+	hea=100;
+	spec=5;
+	sco=0;
+	int i;
+	for(i=0;i<NumberOfEnemiesPerFrame;i++)
+	{
+		e[i].init();
+	}
+
+}
 void keyboard(unsigned char key, int x, int y)
 {
 	switch(key)
 	{
+		case 'Z':
 		case 'z':	if(ship.alive)
 					{ship.shoot=1;
-				nobull++;}
+				NumberOfBulletsPerFrame++;}
 			break;
+		case 'X':
 		case 'x': if(ship.alive && !sp.firing && spec > 0)
 			{
 			sp.shoot=1;
 			spec--;
+		case 'R':
+		case 'r': if(gamestate == over)
+			{
+					Reinitialization();
+			}
+		case '1': if(gamestate == startScreen){ gamestate=game; glutPostRedisplay();}
+			break;
+		case '2': if(gamestate == startScreen){gamestate=instructionScreen;glutPostRedisplay();}
+		break;
+		case 'b': if(gamestate == instructionScreen){ gamestate=startScreen;glutPostRedisplay();}
 		}
 			
 		break;
@@ -616,23 +390,98 @@ void keyboard(unsigned char key, int x, int y)
 }
 void overdisplay()
 {
-	char text[]="GAME OVER";
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	glColor3f(0,0,1);
-	glRasterPos2f(250,250);
+	char text1[]="GAME OVER";
+	char text2[]="You Scored ";
+	char text3[]="Press \'r\' to restart";
+	char ch[]={'0','0','0'};
+	char c;
+	int rem;
+	int temp=sco;
+	
+	glColor3f(1,0,0);
+	glRasterPos2f(180,250);
 	int i;
-	for(i=0;i<sizeof(text);i++)
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,text[i]);
-	glEnd();
+	for(i=0;i<sizeof(text1);i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,text1[i]);
+	glRasterPos2f(180,150);
+	for(i=0;i<sizeof(text2);i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,text2[i]);
+	i=2;
+	do
+	{
+		rem=temp%10;
+		temp=temp/10;
+		c='0'+rem;
+		ch[i]=c;
+		i--;
+	}while(temp);
+	for(i=0;i<sizeof(ch);i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,ch[i]);
+	glRasterPos2f(180,130);
+	
+	for(i=0;i<sizeof(text3);i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,text3[i]);
+
+	 glFlush();
+	 glutSwapBuffers();
+}
+void startScreenDisplay()
+{
+	char text0[]="STAR RAGE\n";
+	char text3[]="How long can you survive ?\n";
+	char text1[]="Press 1 to play\n";
+	char text2[]="Press 2 for instructions\n";
+	glColor3f(1,1,1);
+	glRasterPos2f(170,250);
+	int i;
+	for(i=0;i<sizeof(text1);i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,text1[i]);
+	glRasterPos2f(170,220);
+	for(i=0;i<sizeof(text2);i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,text2[i]);
+	glRasterPos2f(170,400);
+	for(i=0;i<sizeof(text0);i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,text0[i]);
+	// glRasterPos2f(170,350);
+	// for(i=0;i<sizeof(text3);i++)
+	// 	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,text3[i]);
 	glFlush();
+	glutSwapBuffers();
+}
+void displayInstructions()
+{
+	char text[][100]={"Earth is attacked by Invading Aliens.","Your job is to defend your planet","Move with the mouse","Movement is restricted only to the X-axis", "Press \'z\' to shoot","Press \'x\' to use special weapon","Press \'b\' to go back to main menu"};
+	glColor3f(1,1,1);
+	int i,j, height=450;
+	glColor3f(1,1,1);
+	for(i=0;i<7;i++)
+	{
+		glRasterPos2f(50,height);
+		for(j=0;j<sizeof(text[i]);j++)
+		{
+				glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,text[i][j]);
+		}
+		height=height-50;
+	}
+		glFlush();
+		glutSwapBuffers();
+
+
 }
 void display()
 {
-	if(gamestate == game)
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	switch(gamestate)
 	{
-		gamedisplay();
+		case game: gamedisplay();
+		break;
+		case over: overdisplay();
+		break;
+		case startScreen: startScreenDisplay();
+		break;
+		case instructionScreen: displayInstructions();
+		break;
 	}
-	overdisplay();
 	
 	
 }
@@ -643,8 +492,8 @@ void myinit()
 	glClearColor(0,0,0,0);
 	for(i=0;i<n;i++)
 	{
-		s[i].x=rand()%width;
-		s[i].y=rand()%height;
+		s[i].x=rand()%500;
+		s[i].y=rand()%500;
 		
 	}
 	for(i=0;i<481;i++)
@@ -660,6 +509,7 @@ int main(int argc, char** argv)
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
 	glutInitWindowSize(500,500);
+	glutInitWindowPosition(500,500);
 	glutCreateWindow("Star Rage");
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(display);
