@@ -17,7 +17,8 @@
 #define over 1
  using namespace std;
 extern int enemyX[481];
-int height=500, width=500;
+int WIDTH = 400;
+int HEIGHT = 300;
 namespace GameObjects
 {
 	myship ship;
@@ -55,8 +56,8 @@ void showstars()
 		}
 		else
 		{
-			s[i].y=height;
-			s[i].x=rand()%width;
+			s[i].y=500;
+			s[i].x=rand()%500;
 		}	
 	}
 	
@@ -327,25 +328,23 @@ void move(int x, int y)
 }
 void reshape(int w, int h)
 {
-	height=h;
-	width=w;
+	HEIGHT=h;
+	WIDTH=w;
 	glViewport(0,0,w,h);
 	double asp=(float)w/(float)h;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	if(w<=h)
-		glOrtho(0,500,0,500,-1,1);
-	else
-		glOrtho(0,500,0,500,-1,1);
+		glOrtho(0,500,0,500,-10,10);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glutPostRedisplay();
+	
 }
 void Reinitialization()
 {
 	gamestate=game;
 	ship.Constructor();
-	NumberOfEnemiesPerFrame=4;
+
 	enemyspeed=2;
 	hea=100;
 	spec=5;
@@ -355,6 +354,7 @@ void Reinitialization()
 	{
 		e[i].init();
 	}
+	NumberOfEnemiesPerFrame=4;
 
 }
 void keyboard(unsigned char key, int x, int y)
@@ -431,6 +431,9 @@ void startScreenDisplay()
 	char text3[]="How long can you survive ?\n";
 	char text1[]="Press 1 to play\n";
 	char text2[]="Press 2 for instructions\n";
+	char dev[]="Developed by\n";
+	char name1[]="Luckyson Khaidem : 1PE12CS080\n";
+	char name2[]="Nishant Niket: 1PE12CS107\n";
 	glColor3f(1,1,1);
 	glRasterPos2f(170,250);
 	int i;
@@ -445,6 +448,17 @@ void startScreenDisplay()
 	// glRasterPos2f(170,350);
 	// for(i=0;i<sizeof(text3);i++)
 	// 	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,text3[i]);
+	glColor3f(1,0,0);
+	glRasterPos2f(10,120);
+		for(i=0;i<sizeof(dev);i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,dev[i]);
+	glRasterPos2f(10,100);
+		for(i=0;i<sizeof(name1);i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,name1[i]);
+	glRasterPos2f(10,80);
+		for(i=0;i<sizeof(name2);i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,name2[i]);
+
 	glFlush();
 	glutSwapBuffers();
 }

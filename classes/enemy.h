@@ -80,7 +80,7 @@ class enemy
 	{
 		float i,j,J;
 		float asp;
-		glColor3f(1,1,1);
+		glColor3f(1,1,0);
 		for(i=x-r;i<=x+r;i++)
 		{
 			asp=r*r-(i-x)*(i-x);
