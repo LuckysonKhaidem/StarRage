@@ -1,6 +1,7 @@
 /*TTILE: Star Rage
   DESCRIPTION: A 2d top down space shooting game implmented with openGL
   AUTHOR: Luckyson Khaidem
+bruh
 */
 
 
